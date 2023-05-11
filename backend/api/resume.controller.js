@@ -17,7 +17,7 @@ export default class ResumeController {
                     message: 'No file is selected.',
                     date: new Date()
                 }) 
-            } else if (file.orginalname.match(/\.(pdf)$/)) {
+            } else if (file.originalname.split('.').pop() !== 'pdf') {
                 res.status(400).send({
                     success: false,
                     message: 'Only pdf files are allowed.',
@@ -37,8 +37,7 @@ export default class ResumeController {
             })
             const openai = new OpenAIApi(configuration)
 
-            const prompt = `convert the following resume to json in string format: 
-                            ${text}`
+            const prompt = `convert the following resume to json in string format: ${text}`
 
             const { data } = await openai.createChatCompletion(
                 {
