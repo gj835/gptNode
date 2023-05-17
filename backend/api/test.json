@@ -1,0 +1,71 @@
+{
+   "name": "Jin Gan",
+   "email": "jin.gan101@gmail.com",
+   "others": {
+      "summary": "Experienced Software Engineer with a strong background in backend development, web development, and database management. Skilled in Java, Python, JavaScript, and various system platforms. Seeking a challenging role in the tech industry to leverage my expertise in developing scalable and efficient solutions.",
+      "relevant_skills": {
+         "programming": [
+            "Java",
+            "Python",
+            "JavaScript"
+         ],
+         "web_development": [
+            "HTML",
+            "CSS",
+            "Node.js",
+            "Flask"
+         ],
+         "database": [
+            "MySQL",
+            "MongoDB"
+         ],
+         "system_platform": [
+            "Linux",
+            "OpenStack",
+            "AWS",
+            "Docker Container",
+            "Micro-services"
+         ],
+         "tools": [
+            "Git",
+            "Maven",
+            "Buck"
+         ]
+      },
+      "professional_experience": [
+         {
+            "title": "Software Engineer",
+            "company": "Futurewei Technology",
+            "location": "Santa Clara, CA",
+            "date_range": "Jan. 2014 – Aug. 2017",
+            "description": [
+               "Software Defined Network (SDN) Platform Development",
+               "Worked within open-source project: Open Network Operating System (ONOS).",
+               "Developed system features by creating RESTful API modules, improving feature delivery by 25%.",
+               "Led integration development and testing process in collaboration with the open-source community for ONOS dynamic configuration brigade (Project link).",
+               "Researched AI solutions for SDN controller project to achieve network self-monitoring and reliability-control (Project link).",
+               "Technology: Java, Python, Software Defined Network"
+            ]
+         },
+         {
+            "title": "Software Engineer",
+            "company": "Futurewei Technology",
+            "location": "Santa Clara, CA",
+            "date_range": "Jan. 2014 – Aug. 2017",
+            "description": [
+               "Open Network Function Virtualization Development (OPNFV)",
+               "Developed and contributed to ONOS automation integration module's codebase (Python, shell script), providing a stable Network Function Virtualization (NFV) environment.",
+               "Designed and developed a full-stack automated testbed, reducing testing time by 30%.",
+               "Technology: Java, Python, Shell Script, Ansible, OpenStack, Linux"
+            ]
+         }
+      ],
+      "education": [
+         {
+            "degree": "Master of Science in Information Science",
+            "institution": "University of Pittsburgh",
+            "date_range": "Aug. 2012 - Dec. 2013"
+         }
+      ]
+   }
+}

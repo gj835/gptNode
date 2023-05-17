@@ -1,44 +1,94 @@
-let resume
+import dotenv from 'dotenv'
+import { Sequelize, DataTypes } from 'sequelize'
 
-import mongodb from "mongodb"
-// const ObjectId = mongodb.ObjectId
+dotenv.config()
+
+// Test connection to the PostgreSQL database on TimescaleDB
+// TIMESCALE_HOST_KEY
+const sequelize = new Sequelize(process.env.TIMESCALE_HOST_KEY)
+try {
+    await sequelize.authenticate()
+    console.log('PostgreSQL connection has been established successfully.')
+} catch (error) {
+    console.error('Unable to connect to PostgreSQL:', error)
+}
+
+// sequelize model: people
+const People = sequelize.define('People', {
+    // Model attributes are defined here
+    name: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    email: {
+        type: DataTypes.STRING(1234),
+        allowNull: false,
+        primaryKey: true 
+    },
+    other: {
+        type: DataTypes.STRING,
+    }
+}, {
+    tableName: 'peoples',
+    timestamps: false
+})
 
 export default class ResumeDAO {
-    static async injectDB(conn) {
-        if (resume) {
-            return
-        }
-
+    static async add(name, email, other) {
         try {
-            resume = await conn.db(process.env.MOVIEREVIEWS_NS)
-                .collection('resume')
-        }
-        catch (e) {
-            console.error(`unable to connect in ResumeDAO: ${e}`)
+            if (this.get(email).length != 0) {
+                throw new Error(`resumeDAO: add failed ${email} already exists`)
+            }
+            // const newPeople = 
+            await People.create({
+                name,
+                email,
+                other
+            })
+        } catch (e) {
+            console.log(`resumeDAO add failed: ${e}`)
         }
     }
 
-    // static async uploadResume(user, rawResume, date) {
-    //     try {
-    //         const resumeDoc = {
-    //             name: user.name,
-    //             user_id: user._id,
-    //             date: date,
-    //             resumeOriginal: rawResume,
-    //         }
-    //         return await resume.insertOne(resumeDoc)
-    //     } catch (e) {
-    //         console.error(`unable to upload resume: ${e}`)
-    //         return { error: e }
-    //     }
-    // }
+    static async update(name, email, other) {
+        try {
+            // const updatePeople = 
+            await People.update({
+                name,
+                email,
+                other
+            })
+        } catch (e) {
+            console.log(`resumeDAO update failed: ${e}`)
+        }
+    }
 
-    // static async getResume(userId) {
-    //     try {
-    //         return await resume.find({ user_id: userId }).toArray()
-    //     } catch (e) {
-    //         console.error(`something went wrong in getResume: ${e}`)
-    //         throw e
-    //     }
-    // }
+    static async delete(name, email, other) {
+        try {
+            // const deletePeople = 
+            await People.destroy({
+                where: {
+                    name,
+                    email,
+                    other
+                }
+            })
+        } catch (e) {
+            console.log(`resumeDAO delete failed: ${e}`)
+        }
+    }
+
+    static async get(email) {
+        try {
+            const people = await People.findAll({
+                where: {
+                    // name: name,
+                    email: email
+                }
+            })
+            return people
+        } catch (e) {
+            console.log(`resumeDAO get failed: ${e}`)
+        }
+    }
 }

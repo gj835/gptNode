@@ -3,8 +3,14 @@ import fs from 'fs'
 import PDFParser from 'pdf-parse'
 import { Configuration, OpenAIApi } from 'openai'
 import dotenv from 'dotenv'
+import ResumeDAO from '../dao/resumeDAO.js'
+import { concatTransformationMatrix } from 'pdf-lib'
+import data from './test.json' assert {
+    type: "json"
+}
 
 dotenv.config()
+const testMode = false;
 
 export default class ResumeController {
     static async upload(req, res) {
@@ -31,30 +37,42 @@ export default class ResumeController {
             const { text } = await PDFParser(dataBuffer)
 
             // 3. convert text to json
-            const configuration = new Configuration({
-                organization: process.env.ORG_ID,
-                apiKey: process.env.OPENAI_API_KEY,
-            })
-            const openai = new OpenAIApi(configuration)
-
-            const prompt = `convert the following resume to json in string format: ${text}`
-
-            const { data } = await openai.createChatCompletion(
-                {
-                    model: 'gpt-3.5-turbo',
-                    messages: [{'role': 'user', 'content': prompt}]
-                }
-            )
-            const completionString = data.choices[0].message.content
-            const completionJSON = JSON.parse(completionString)
+            let completionJSON
+            if (!testMode) {
+                const configuration = new Configuration({
+                    organization: process.env.ORG_ID,
+                    apiKey: process.env.OPENAI_API_KEY,
+                })
+                const openai = new OpenAIApi(configuration)
+                const prompt = `convert the following resume to json in string format 
+                                with three attribute: name, email and others, 
+                                the resume is "${text}"`
+                const { data } = await openai.createChatCompletion(
+                    {
+                        model: 'gpt-3.5-turbo',
+                        messages: [{'role': 'user', 'content': prompt}]
+                    }
+                )
+                const completionString = data.choices[0].message.content
+                completionJSON = JSON.parse(completionString)
+            } else {
+                console.log("test mode")
+                completionJSON = data
+            }
+            // message example: {name, email, others}
 
             // 4. save json to database
-            // console.log(completionJSON)
+            const addResponse = await ResumeDAO.add(
+                completionJSON.name, 
+                completionJSON.email, 
+                JSON.stringify(completionJSON.others)
+            )
 
             // 5. return json to frontend
             return res.status(200).json({
                 success: true,
-                message: completionJSON,
+                message: addResponse,
+                // message: completionJSON,
                 date: new Date()
             })
         } catch (e) {
@@ -62,7 +80,35 @@ export default class ResumeController {
             console.error(`unable to process resume: ${message}`)
             return res.status(500).json({
                 success: false,
-                message,
+                message: message,
+                date: new Date()
+            })
+        }
+    }
+
+    static async apiGetResume(req, res) {
+        try {
+            const { email } = req.query
+            console.log(`req` + req)
+            const resume = await ResumeDAO.get(email)
+            if (!resume) {
+                res.status(400).json({
+                    success: false,
+                    message: `resume not found`,
+                    date: new Date()
+                })
+            }
+            res.status(200).json({
+                success: true,
+                message: resume,
+                date: new Date()
+            })
+        } catch (e) {
+            const { message } = e
+            console.error(`apiGetResume: ${message}`)
+            res.status(500).json({
+                success: false,
+                message: message,
                 date: new Date()
             })
         }
